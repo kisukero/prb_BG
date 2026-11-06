@@ -5,6 +5,23 @@ export interface ProductLot {
   price: number;
   stock: number;
 }
+export interface ProductLotFormData {
+  numeroLote: string;
+  proveedor: string;
+  precio: number;
+  stock: number;
+}
+
+export interface ProductFormData {
+  codigo: string;
+  nombre: string;
+  descripcion: string;
+  activo: boolean;
+  numeroLote: string;
+  proveedor: string;
+  precio: number;
+  stock: number;
+}
 
 export interface Product {
   id: number;
@@ -14,5 +31,3 @@ export interface Product {
   isActive: boolean;
   lots: ProductLot[];
 }
-
-export type ProductRequest = Omit<Product, 'id'>;
