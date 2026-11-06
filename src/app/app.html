@@ -1,0 +1,32 @@
+<main>
+  @if (!token()) {
+    <section class="login-card">
+      <h1>Inventario WMS</h1><p>Ingresa con el usuario de la API.</p>
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <label>Usuario <input formControlName="userName" /></label>
+        <label>Contraseña <input type="password" formControlName="password" /></label>
+        <button type="submit">Iniciar sesión</button>
+      </form>
+    </section>
+  } @else {
+    <header><div><h1>Inventario de productos</h1><span>Usuario: {{ userName() }}</span></div><button class="secondary" (click)="logout()">Cerrar sesión</button></header>
+    <p class="message" [class.error]="message().includes('No se pudo') || message().includes('no es válida')">{{ message() }}</p>
+    <section class="form-card">
+      <h2>{{ editingId === null ? 'Nuevo producto' : 'Editar producto' }}</h2>
+      <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+        <div class="fields"><label>Código <input formControlName="code" /></label><label>Nombre <input formControlName="name" /></label><label>Descripción <input formControlName="description" /></label><label class="check"><input type="checkbox" formControlName="isActive" /> Activo</label></div>
+        <div formArrayName="lots" class="lots"><h3>Lotes y proveedores</h3>
+          @for (lot of lots.controls; track $index; let i = $index) {
+            <div class="lot" [formGroupName]="i"><input formControlName="lotNumber" placeholder="Número de lote" /><input formControlName="supplier" placeholder="Proveedor" /><input type="number" formControlName="price" placeholder="Precio" min="0" step="0.01" /><input type="number" formControlName="stock" placeholder="Stock" min="0" /><button type="button" class="danger" (click)="removeLot(i)">Quitar</button></div>
+          }
+          <button type="button" class="secondary" (click)="addLot()">+ Agregar lote</button>
+        </div>
+        <div class="actions"><button type="submit" [disabled]="productForm.invalid">Guardar</button><button type="button" class="secondary" (click)="cancelEdit()">Cancelar</button></div>
+      </form>
+    </section>
+    <section class="table-card"><h2>Productos ingresados</h2><table><thead><tr><th>Código</th><th>Producto</th><th>Estado</th><th>Lotes / proveedores</th><th>Acciones</th></tr></thead><tbody>
+      @for (product of products(); track product.id) { <tr><td>{{ product.code }}</td><td>{{ product.name }}<small>{{ product.description }}</small></td><td>{{ product.isActive ? 'Activo' : 'Inactivo' }}</td><td>@for (lot of product.lots; track lot.id) { <div>{{ lot.lotNumber }} - {{ lot.supplier }}: ${{ lot.price }} / {{ lot.stock }} u.</div> }</td><td><button class="secondary" (click)="edit(product)">Editar</button> <button class="danger" (click)="remove(product.id)">Eliminar</button></td></tr> }
+      @empty { <tr><td colspan="5">No hay productos registrados.</td></tr> }
+    </tbody></table></section>
+  }
+</main>
