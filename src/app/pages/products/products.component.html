@@ -1,19 +1,13 @@
 <main>
   <header><div><p class="eyebrow">WMS · Inventario</p><h1>Productos</h1><span>Usuario: {{ userName }}</span></div><button class="secondary" (click)="logout()">Cerrar sesión</button></header>
   @if (message()) { <p class="message" [class.error]="message().includes('No se pudo') || message().includes('Completa') || message().includes('ya existe')">{{ message() }}</p> }
-
-  <section class="form-card"><h2>{{ editingId === null ? 'Nuevo producto y lote' : 'Editar producto y lote' }}</h2><p class="required-note">Ingresa un producto junto con un lote.</p>
-    <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
-      <div class="fields"><label>Código * <input formControlName="codigo" /></label><label>Nombre * <input formControlName="nombre" /></label><label>Descripción <input formControlName="descripcion" /></label><label class="check"><input type="checkbox" formControlName="activo" /> Activo</label></div>
+  <section class="form-card"><h2>{{ editingId === null ? 'Nuevo producto y lote' : 'Editar producto y lote' }}</h2><p class="required-note">Si repites el código con otro lote/proveedor, se agregará al producto existente.</p>
+    <form [formGroup]="productForm" (ngSubmit)="saveProduct()"><div class="fields"><label>Código * <input formControlName="codigo" /></label><label>Nombre * <input formControlName="nombre" /></label><label>Descripción <input formControlName="descripcion" /></label><label class="check"><input type="checkbox" formControlName="activo" /> Activo</label></div>
       <h3>Datos del lote</h3><div class="fields"><label>Número de lote * <input formControlName="numeroLote" /></label><label>Proveedor * <input formControlName="proveedor" /></label><label>Precio <input type="number" formControlName="precio" min="0" step="0.01" /></label><label>Stock <input type="number" formControlName="stock" min="0" /></label></div>
       <div class="actions"><button type="submit">Guardar</button><button type="button" class="secondary" (click)="cancelEdit()">Cancelar</button></div>
     </form>
   </section>
-
   <section class="table-card"><h2>Productos ingresados</h2><table><thead><tr><th>Código</th><th>Producto</th><th>Estado</th><th>Número de lote</th><th>Proveedor</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead><tbody>
-    @for (product of products(); track product.id) {
-      @for (lot of product.lots; track lot.id) { <tr><td>{{ product.code }}</td><td>{{ product.name }}<small>{{ product.description }}</small></td><td>{{ product.isActive ? 'Activo' : 'Inactivo' }}</td><td>{{ lot.lotNumber }}</td><td>{{ lot.supplier }}</td><td>${{ lot.price }}</td><td>{{ lot.stock }}</td><td><button class="secondary" (click)="edit(product)">Editar</button> <button class="danger" (click)="remove(product.id)">Eliminar</button></td></tr> }
-      @if (!product.lots.length) { <tr><td>{{ product.code }}</td><td>{{ product.name }}</td><td>{{ product.isActive ? 'Activo' : 'Inactivo' }}</td><td colspan="4">Sin lote</td><td><button class="secondary" (click)="edit(product)">Editar</button> <button class="danger" (click)="remove(product.id)">Eliminar</button></td></tr> }
-    } @empty { <tr><td colspan="8">No hay productos registrados.</td></tr> }
+    @for (product of products(); track product.id) { @for (lot of product.lots; track lot.id) { <tr><td>{{ product.code }}</td><td>{{ product.name }}<small>{{ product.description }}</small></td><td>{{ product.isActive ? 'Activo' : 'Inactivo' }}</td><td>{{ lot.lotNumber }}</td><td>{{ lot.supplier }}</td><td>${{ lot.price }}</td><td>{{ lot.stock }}</td><td><button class="secondary" (click)="edit(product, lot)">Editar</button> <button class="danger" (click)="remove(product.id)">Eliminar</button></td></tr> } @if (!product.lots.length) { <tr><td>{{ product.code }}</td><td>{{ product.name }}</td><td>{{ product.isActive ? 'Activo' : 'Inactivo' }}</td><td colspan="4">Sin lote</td><td><button class="danger" (click)="remove(product.id)">Eliminar</button></td></tr> } } @empty { <tr><td colspan="8">No hay productos registrados.</td></tr> }
   </tbody></table></section>
 </main>

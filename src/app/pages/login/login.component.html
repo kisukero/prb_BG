@@ -1,1 +1,13 @@
-<main class="login-page"><section class="login-card"><div class="brand">WMS</div><h1>Inventario de productos</h1><p>Ingresa con el usuario registrado en la API.</p><form [formGroup]="loginForm" (ngSubmit)="login()"><label>Usuario<input formControlName="usuario" autocomplete="username" placeholder="Tu usuario" /></label><label>Clave<input type="password" formControlName="clave" autocomplete="current-password" placeholder="Tu clave" /></label>@if (message()) { <p class="error" role="alert">{{ message() }}</p> }<button type="submit" [disabled]="loginForm.invalid || loading()">{{ loading() ? 'Ingresando...' : 'Iniciar sesión' }}</button></form></section></main>
+<main class="login-page">
+    <section class="login-card">
+        <div class="brand">WMS</div>
+        <h1>Inventario de productos</h1>
+        <p>Ingresa con el usuario registrado en la API.</p>
+        <form [formGroup]="loginForm" (ngSubmit)="login()"><label>Usuario<input formControlName="usuario"
+                    autocomplete="username" placeholder="Tu usuario" /></label><label>Clave<input type="password"
+                    formControlName="clave" autocomplete="current-password" placeholder="Tu clave" /></label>@if
+            (message()) { <p class="error" role="alert">{{ message() }}</p> }<button type="submit"
+                [disabled]="loginForm.invalid || loading()">{{ loading() ? 'Ingresando...' : 'Iniciar sesión'
+                }}</button></form>
+    </section>
+</main>

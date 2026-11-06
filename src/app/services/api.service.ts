@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { tap } from 'rxjs';
 import { LoginFormData, LoginResponse } from '../models/login';
-import { Product, ProductFormData } from '../models/product';
+import { Product, ProductFormData, ProductLot } from '../models/product';
 import { LoggerService } from './logger.service';
 
 @Injectable({ providedIn: 'root' })
@@ -35,6 +35,17 @@ export class ApiService {
     );
   }
 
+  updateProductLot(token: string, existing: Product, product: ProductFormData, lotId: number | null) {
+    const newLot = this.toApiLot(product);
+    const lots = lotId === null
+      ? [...existing.lots.map((lot) => this.toApiLotFromExisting(lot)), newLot]
+      : existing.lots.map((lot) => lot.id === lotId ? newLot : this.toApiLotFromExisting(lot));
+    const request = { code: product.codigo, name: product.nombre, description: product.descripcion, isActive: product.activo, lots };
+    return this.http.put(`${this.baseUrl}/Products/${existing.id}`, request, { headers: this.headers(token) }).pipe(
+      tap({ next: () => this.logger.info(lotId === null ? 'Lote agregado.' : 'Producto y lote actualizados.', { id: existing.id }), error: (error) => this.logger.error('Error al guardar el lote.', error) }),
+    );
+  }
+
   deleteProduct(token: string, id: number) {
     return this.http.delete(`${this.baseUrl}/Products/${id}`, { headers: this.headers(token) }).pipe(
       tap({ next: () => this.logger.info('Producto eliminado.', { id }), error: (error) => this.logger.error('Error al eliminar producto.', error) }),
@@ -51,7 +62,15 @@ export class ApiService {
       name: product.nombre,
       description: product.descripcion,
       isActive: product.activo,
-      lots: [{ lotNumber: product.numeroLote, supplier: product.proveedor, price: product.precio, stock: product.stock }],
+      lots: [this.toApiLot(product)],
     };
+  }
+
+  private toApiLot(product: ProductFormData) {
+    return { lotNumber: product.numeroLote, supplier: product.proveedor, price: product.precio, stock: product.stock };
+  }
+
+  private toApiLotFromExisting(lot: ProductLot) {
+    return { lotNumber: lot.lotNumber, supplier: lot.supplier, price: lot.price, stock: lot.stock };
   }
 }
